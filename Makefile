@@ -2,7 +2,7 @@
 MIN_BAMS=1
 MIN_COVERAGE=1
 
-all : suns.bed suns.no_repeats_36bp_flanking.bed suns.supported_by_high_coverage.bed
+all : suns.no_repeats_36bp_flanking.bed
 
 .PHONY : clean
 
