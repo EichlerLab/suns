@@ -1,0 +1,11 @@
+
+Run:
+
+. config.sh
+make
+
+Test output:
+
+diff -u <(cut -f 4 mismatches.bed) <(cut -f 2 mismatches.fasta.tab | tr '[:lower:]' '[:upper:]')
+
+No output from this command means everything worked.
