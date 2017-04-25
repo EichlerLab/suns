@@ -77,7 +77,7 @@ def get_alignment_name(alignment):
     return alignment_name
 
 
-def align_sequences(asequence, bsequence, tmp_dir="/tmp"):
+def align_sequences(asequence, bsequence, tmp_dir=os.environ["TMPDIR"]):
     """
     Aligns two sequences defined in the given filenames using EMBOSS's stretcher
     alignment tool.
@@ -177,7 +177,8 @@ def process_wgac_alignment(row, wgac_sequences, tmp_dir):
     # Create a temporary directory for this analysis.
     alignment_name = get_alignment_name(row)
     tmp_dir = os.path.join(tmp_dir, alignment_name)
-    os.mkdir(tmp_dir)
+    if not os.path.exists(tmp_dir):
+        os.mkdir(tmp_dir)
 
     # Find sequences for alignment.
     sequences = [wgac_sequences.get("%s:%s-%s(%s)" % sequence)
@@ -211,7 +212,7 @@ def run_locally(wgac_alignments_filename, wgac_sequences_filename, output_dir):
     mismatches in each alignment.
     """
     # Setup WGAC alignments index.
-    tmp_dir = "/tmp/wgac"
+    tmp_dir = os.environ["TMPDIR"]
     wgac_sequences = SeqIO.index(wgac_sequences_filename, "fasta")
     total_wgac_sequences = len(wgac_sequences)
     logger.info("Loaded %i WGAC sequences", total_wgac_sequences)
@@ -232,17 +233,6 @@ def run_locally(wgac_alignments_filename, wgac_sequences_filename, output_dir):
             mismatches = process_wgac_alignment(alignment, wgac_sequences, tmp_dir)
             writer.writerows(mismatches)
 
-    # Sort BED files in place by chromosome and start position.
-    return_value = subprocess.call("sort -k 1,1 -k 2,2n -u -o %s %s" % (tmp_output, tmp_output), shell=True)
-    if return_value != 0:
-        logger.error(
-            "Sorting file %s on rank %s (node %s) returned non-zero exit code: %s",
-            tmp_output,
-            rank,
-            node_name,
-            return_value
-        )
-
     logger.debug("Move mismatches to output dir: %s", final_output)
     shutil.move(tmp_output, final_output)
     logger.info("Done calculating SUNs")
@@ -262,7 +252,7 @@ def main(wgac_alignments_filename, wgac_sequences_filename, output_dir):
     status = MPI.Status()
 
     # Setup WGAC alignments index.
-    tmp_dir = "/tmp/wgac"
+    tmp_dir = os.environ["TMPDIR"]
     wgac_sequences = SeqIO.index(wgac_sequences_filename, "fasta")
     total_wgac_sequences = len(wgac_sequences)
     logger.info("Loaded %i WGAC sequences", total_wgac_sequences)
@@ -341,17 +331,6 @@ def main(wgac_alignments_filename, wgac_sequences_filename, output_dir):
                     with open(tmp_output, "w") as fh:
                         writer = csv.writer(fh, delimiter="\t", lineterminator='\n')
                         writer.writerows(mismatches)
-
-                    # Sort BED files in place by chromosome and start position.
-                    return_value = subprocess.call("sort -k 1,1 -k 2,2n -u -o %s %s" % (tmp_output, tmp_output), shell=True)
-                    if return_value != 0:
-                        logger.error(
-                            "Sorting file %s on rank %s (node %s) returned non-zero exit code: %s",
-                            tmp_output,
-                            rank,
-                            node_name,
-                            return_value
-                        )
 
                     logger.debug("Move mismatches to output dir: %s", final_output)
                     shutil.move(tmp_output, final_output)
