@@ -1,0 +1,8 @@
+---
+
+wgac: /net/eichler/vol2/eee_shared/assemblies/hg19/wgac/genomicSuperDup.tab
+sunks: /net/eichler/vol2/eee_shared/assemblies/hg19/sunks/hg19_sunks.bed.gz
+reference_dir: /net/eichler/vol2/eee_shared/assemblies/hg19
+reference: /net/eichler/vol2/eee_shared/assemblies/hg19/ucsc.hg19.fasta
+repeats: /net/eichler/vol2/eee_shared/assemblies/hg19/repeats/repeats_and_trf.bed
+size: 100 # Number of wgac pairs per find_suns job
