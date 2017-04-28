@@ -149,9 +149,10 @@ def parse_alignment_for_mismatches(wgac_alignment, alignment):
             # recalculate Ti/Tv ratio without double-counting they could do so
             # by mismatch number.
             mismatch_id = sha.sha("".join(map(str, (a_coordinates[0], a_start, b_coordinates[0], b_start)))).hexdigest()
+            mismatch_id2 = "_".join(map(str, (a_coordinates[0], a_start, b_coordinates[0], b_start)))
 
-            mismatches.append([a_coordinates[0], a_start, a_start + 1, ">".join((a_sequence[i], b_sequence[i])), mismatch_id, a_coordinates[3]])
-            mismatches.append([b_coordinates[0], b_start, b_start + 1, ">".join((b_sequence[i], a_sequence[i])), mismatch_id, b_coordinates[3]])
+            mismatches.append([a_coordinates[0], a_start, a_start + 1, ">".join((a_sequence[i], b_sequence[i])), mismatch_id, a_coordinates[3], mismatch_id2])
+            mismatches.append([b_coordinates[0], b_start, b_start + 1, ">".join((b_sequence[i], a_sequence[i])), mismatch_id, b_coordinates[3], mismatch_id2])
 
         # Keep track of the current position in both sequences by excluding gaps
         # from the position count.

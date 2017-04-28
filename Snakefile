@@ -13,7 +13,7 @@ if not os.path.exists("log"):
 
 localrules: all, clean
 
-rule merge_mismatches:
+rule all:
     input: dynamic("suns/suns.{part}.bed")
     output: "merged/suns.sort.bed"
     params: sge_opts="-l h_rt=1:0:0"
@@ -25,7 +25,7 @@ rule get_mismatches:
            fasta="regions.fasta"
     output: "suns/suns.{part}.bed"
     shadow: True
-    params: sge_opts="-l h_rt=1:0:0"
+    params: sge_opts="-l h_rt=5:0:0 -soft -l ssd=True"
     shell:
         """python find_suns.py {input.wgac} {input.fasta} . --local
         sort -k 1,1 -k 2,2n suns.bed > {output}"""
