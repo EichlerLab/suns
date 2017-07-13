@@ -13,12 +13,26 @@ if not os.path.exists("log"):
 
 localrules: all, clean
 
-rule all:
+rule filter_sun_repeats:
+    input: "suns.bed", config["repeats"]
+    output: "suns.no_repeats_36bp_flanking.bed"
+    params: sge_opts="-l h_rt=1:0:0 -l mfree=4G"
+    shell:
+        "bedtools window -a {input[0]} -b {input[1]} -w 36 -v > {output}"
+
+rule get_suns:
+    input: "merged/suns.sort.bed", "sunks.bed"
+    output: "suns.bed"
+    params: sge_opts="-l h_rt=1:0:0 -l mfree=4G"
+    shell:
+        "intersectBed -a {input[0]} -b {input[1]} -sorted > {output}"
+
+rule sort_mismatches:
     input: dynamic("suns/suns.{part}.bed")
     output: "merged/suns.sort.bed"
     params: sge_opts="-l h_rt=1:0:0"
     shell:
-        "sort -m {input} > {output}"
+        "sort -m -k 1,1 -k 2,2n {input} > {output}"
 
 rule get_mismatches:
     input: wgac="split/unique_wgac{part}",
