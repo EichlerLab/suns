@@ -1,7 +1,7 @@
 
 Run:
 
-. config.sh
+. env.cfg
 make
 
 Test output:
